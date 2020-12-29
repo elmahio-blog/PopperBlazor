@@ -1,0 +1,39 @@
+﻿@page "/"
+@inject Popper Popper
+
+<br />
+<span id="reference" @ref=reference style="background-color:blue;">Reference</span>
+<span id="popper" @ref=popper style="background-color:red;width:100px;">@state?.Placement.ToString()</span>
+<br />
+<br />
+@foreach (Placement placement in Enum.GetValues(typeof(Placement)))
+{
+    <button @onclick="()=>SetPlacement(placement)" >@placement.ToString()</button>
+}
+
+@code {
+    protected ElementReference reference;
+
+    protected ElementReference popper;
+
+    protected Instance Instance;
+
+    protected State state;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            Instance = await Popper.CreatePopperAsync(reference, popper, new());
+        }
+    }
+
+    public async Task SetPlacement(Placement placement)
+    {
+        Options options = new()
+        {
+            Placement = placement
+        };
+        state = await Instance.SetOptions(options);
+    }
+}
